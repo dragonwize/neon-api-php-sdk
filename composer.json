@@ -1,0 +1,48 @@
+{
+    "name": "dragonwize/neon-api-php-sdk",
+    "description": "SDK for the Neon database API.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["neon", "database", "postgresql", "api", "client"],
+    "homepage": "https://github.com/dragonwize/neon-api-php",
+    "authors": [],
+    "minimum-stability": "stable",
+    "prefer-stable":     true,
+    "require": {
+        "php": "^8.4",
+        "ext-json": "*",
+        "psr/http-client": "^1.0",
+        "psr/http-message": "^2.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.85",
+        "phpunit/phpunit": "^12.0",
+        "phpstan/phpstan": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dragonwize\\NeonApiSdk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dragonwize\\NeonApiSdk\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    },
+    "scripts": {
+        "code-check":  "vendor/bin/phpstan analyze",
+        "style-check": "vendor/bin/php-cs-fixer check",
+        "style-fix":   "vendor/bin/php-cs-fixer fix",
+        "test":        "vendor/bin/phpunit",
+        "cq":          [
+            "@style-fix",
+            "@code-check"
+        ]
+    }
+}
