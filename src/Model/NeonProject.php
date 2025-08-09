@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Model;
 
-readonly class Project
+readonly class NeonProject
 {
     public function __construct(
         public string $id,

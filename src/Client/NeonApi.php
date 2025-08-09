@@ -9,125 +9,94 @@ use Dragonwize\NeonApiSdk\Model\Branch;
 use Dragonwize\NeonApiSdk\Model\Database;
 use Dragonwize\NeonApiSdk\Model\Endpoint;
 use Dragonwize\NeonApiSdk\Model\Operation;
-use Dragonwize\NeonApiSdk\Model\Project;
+use Dragonwize\NeonApiSdk\Model\NeonProject;
 use Dragonwize\NeonApiSdk\Model\Role;
-use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 
 class NeonApi
 {
-    public const string DEFAULT_BASE_URL = 'https://console.neon.tech/api/v2/';
-    public const string VERSION          = '1.0.0';
+    protected const string BASE_URL = 'https://console.neon.tech/api/v2/';
 
     public function __construct(
         protected string $apiKey,
         protected ClientInterface $httpClient,
-        protected string $baseUrl = self::DEFAULT_BASE_URL,
-        protected ?LoggerInterface $logger = null,
+        protected RequestFactoryInterface $httpMessageFactory,
+        protected string $baseUrl = self::BASE_URL,
     ) {}
 
-    protected function getHttpClient(): ClientInterface
+    public function getBaseUrl(): string
     {
-        return $this->httpClient;
-
-        // Example Guzzle Client.
-        // new GuzzleClient([
-        //     'base_uri' => $this->baseUrl,
-        //     'timeout'  => 30,
-        //     'headers'  => [
-        //         'Authorization' => 'Bearer ' . $this->apiKey,
-        //         'Accept'        => 'application/json',
-        //         'Content-Type'  => 'application/json',
-        //         'User-Agent'    => 'neon-client/php version=(' . self::VERSION . ')',
-        //     ],
-        // ]);
+        return $this->baseUrl;
     }
 
-    protected function makeRequest(string $method, string $path, array $options = []): array
+    public function getHttpClient(): ClientInterface
+    {
+        return $this->httpClient;
+    }
+
+    public function createRequest(string $method, string $uri): RequestInterface
+    {
+        $request = $this->httpMessageFactory->createRequest($method, $this->baseUrl . $uri);
+        $request->withHeader('Content-Type', 'application/json')
+                ->withHeader('Accept', 'application/json')
+                ->withHeader('Authorization', 'Bearer ' . $this->apiKey)
+                ->withHeader('User-Agent', 'DragonwizeNeonApiPhpSdk/1');
+
+        return $request;
+    }
+
+    public function sendRequest(RequestInterface $request): ResponseInterface
     {
         try {
-            $response = $this->getHttpClient()->request($method, $path, $options);
-
-            return $this->parseResponse($response);
-        } catch (RequestException $e) {
+            return $this->getHttpClient()->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
             throw new NeonApiException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
-    protected function parseResponse(ResponseInterface $response): array
+    public function parseResponse(ResponseInterface $response): array
     {
-        $body = $response->getBody()->getContents();
-        $data = json_decode($body, true);
+        $data = json_decode((string)$response->getBody(), true);
 
         if (json_last_error() !== \JSON_ERROR_NONE) {
             throw new NeonApiException('Invalid JSON response: ' . json_last_error_msg());
         }
 
-        return $data;
+        return $data ?? [];
     }
 
-    protected function compactArray(array $data): array
+    public function buildQuery(array $params): string
     {
-        return array_filter($data, fn ($value) => $value !== null);
+        $query = http_build_query($params);
+
+        return ($query ? '?' . $query : '');
     }
 
     public function me(): array
     {
-        return $this->makeRequest('GET', 'users/me');
+        return $this->sendRequest('GET', 'users/me');
     }
 
     public function apiKeys(): array
     {
-        return $this->makeRequest('GET', 'api_keys');
+        return $this->sendRequest('GET', 'api_keys');
     }
 
     public function createApiKey(array $data): array
     {
-        return $this->makeRequest('POST', 'api_keys', ['json' => $data]);
+        return $this->sendRequest('POST', 'api_keys', ['json' => $data]);
     }
 
     public function revokeApiKey(string $apiKeyId): array
     {
-        return $this->makeRequest('DELETE', "api_keys/{$apiKeyId}");
+        return $this->sendRequest('DELETE', "api_keys/{$apiKeyId}");
     }
 
-    public function projects(bool $shared = false, ?string $cursor = null, ?int $limit = null): array
-    {
-        $path   = $shared ? 'projects/shared' : 'projects';
-        $params = $this->compactArray(['cursor' => $cursor, 'limit' => $limit]);
 
-        return $this->makeRequest('GET', $path, ['query' => $params]);
-    }
-
-    public function project(string $projectId): Project
-    {
-        $data = $this->makeRequest('GET', "projects/{$projectId}");
-
-        return Project::fromArray($data['project']);
-    }
-
-    public function createProject(array $data): Project
-    {
-        $response = $this->makeRequest('POST', 'projects', ['json' => $data]);
-
-        return Project::fromArray($response['project']);
-    }
-
-    public function updateProject(string $projectId, array $data): Project
-    {
-        $response = $this->makeRequest('PATCH', "projects/{$projectId}", ['json' => $data]);
-
-        return Project::fromArray($response['project']);
-    }
-
-    public function deleteProject(string $projectId): Project
-    {
-        $response = $this->makeRequest('DELETE', "projects/{$projectId}");
-
-        return Project::fromArray($response['project']);
-    }
 
     public function connectionUri(
         string $projectId,
@@ -141,78 +110,78 @@ class NeonApi
             'pooled'        => $pooled,
         ]);
 
-        return $this->makeRequest('GET', "projects/{$projectId}/connection_uri", ['query' => $params]);
+        return $this->sendRequest('GET', "projects/{$projectId}/connection_uri", ['query' => $params]);
     }
 
     public function branches(string $projectId, ?string $cursor = null, ?int $limit = null): array
     {
         $params = $this->compactArray(['cursor' => $cursor, 'limit' => $limit]);
 
-        return $this->makeRequest('GET', "projects/{$projectId}/branches", ['query' => $params]);
+        return $this->sendRequest('GET', "projects/{$projectId}/branches", ['query' => $params]);
     }
 
     public function branch(string $projectId, string $branchId): Branch
     {
-        $data = $this->makeRequest('GET', "projects/{$projectId}/branches/{$branchId}");
+        $data = $this->sendRequest('GET', "projects/{$projectId}/branches/{$branchId}");
 
         return Branch::fromArray($data['branch']);
     }
 
     public function createBranch(string $projectId, array $data): array
     {
-        return $this->makeRequest('POST', "projects/{$projectId}/branches", ['json' => $data]);
+        return $this->sendRequest('POST', "projects/{$projectId}/branches", ['json' => $data]);
     }
 
     public function updateBranch(string $projectId, string $branchId, array $data): array
     {
-        return $this->makeRequest('PATCH', "projects/{$projectId}/branches/{$branchId}", ['json' => $data]);
+        return $this->sendRequest('PATCH', "projects/{$projectId}/branches/{$branchId}", ['json' => $data]);
     }
 
     public function deleteBranch(string $projectId, string $branchId): array
     {
-        return $this->makeRequest('DELETE', "projects/{$projectId}/branches/{$branchId}");
+        return $this->sendRequest('DELETE', "projects/{$projectId}/branches/{$branchId}");
     }
 
     public function setBranchAsPrimary(string $projectId, string $branchId): array
     {
-        return $this->makeRequest('POST', "projects/{$projectId}/branches/{$branchId}/set_as_primary");
+        return $this->sendRequest('POST', "projects/{$projectId}/branches/{$branchId}/set_as_primary");
     }
 
     public function endpoints(string $projectId): array
     {
-        return $this->makeRequest('GET', "projects/{$projectId}/endpoints");
+        return $this->sendRequest('GET', "projects/{$projectId}/endpoints");
     }
 
     public function endpoint(string $projectId, string $endpointId): Endpoint
     {
-        $data = $this->makeRequest('GET', "projects/{$projectId}/endpoints/{$endpointId}");
+        $data = $this->sendRequest('GET', "projects/{$projectId}/endpoints/{$endpointId}");
 
         return Endpoint::fromArray($data['endpoint']);
     }
 
     public function createEndpoint(string $projectId, array $data): array
     {
-        return $this->makeRequest('POST', "projects/{$projectId}/endpoints", ['json' => $data]);
+        return $this->sendRequest('POST', "projects/{$projectId}/endpoints", ['json' => $data]);
     }
 
     public function updateEndpoint(string $projectId, string $endpointId, array $data): array
     {
-        return $this->makeRequest('PATCH', "projects/{$projectId}/endpoints/{$endpointId}", ['json' => $data]);
+        return $this->sendRequest('PATCH', "projects/{$projectId}/endpoints/{$endpointId}", ['json' => $data]);
     }
 
     public function deleteEndpoint(string $projectId, string $endpointId): array
     {
-        return $this->makeRequest('DELETE', "projects/{$projectId}/endpoints/{$endpointId}");
+        return $this->sendRequest('DELETE', "projects/{$projectId}/endpoints/{$endpointId}");
     }
 
     public function startEndpoint(string $projectId, string $endpointId): array
     {
-        return $this->makeRequest('POST', "projects/{$projectId}/endpoints/{$endpointId}/start");
+        return $this->sendRequest('POST', "projects/{$projectId}/endpoints/{$endpointId}/start");
     }
 
     public function suspendEndpoint(string $projectId, string $endpointId): array
     {
-        return $this->makeRequest('POST', "projects/{$projectId}/endpoints/{$endpointId}/suspend");
+        return $this->sendRequest('POST', "projects/{$projectId}/endpoints/{$endpointId}/suspend");
     }
 
     public function databases(
@@ -223,45 +192,45 @@ class NeonApi
     ): array {
         $params = $this->compactArray(['cursor' => $cursor, 'limit' => $limit]);
 
-        return $this->makeRequest('GET', "projects/{$projectId}/branches/{$branchId}/databases", ['query' => $params]);
+        return $this->sendRequest('GET', "projects/{$projectId}/branches/{$branchId}/databases", ['query' => $params]);
     }
 
     public function database(string $projectId, string $branchId, string $databaseId): Database
     {
-        $data = $this->makeRequest('GET', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseId}");
+        $data = $this->sendRequest('GET', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseId}");
 
         return Database::fromArray($data['database']);
     }
 
     public function createDatabase(string $projectId, string $branchId, array $data): Database
     {
-        $response = $this->makeRequest('POST', "projects/{$projectId}/branches/{$branchId}/databases", ['json' => $data]);
+        $response = $this->sendRequest('POST', "projects/{$projectId}/branches/{$branchId}/databases", ['json' => $data]);
 
         return Database::fromArray($response['database']);
     }
 
     public function updateDatabase(string $projectId, string $branchId, string $databaseId, array $data): Database
     {
-        $response = $this->makeRequest('PATCH', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseId}", ['json' => $data]);
+        $response = $this->sendRequest('PATCH', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseId}", ['json' => $data]);
 
         return Database::fromArray($response['database']);
     }
 
     public function deleteDatabase(string $projectId, string $branchId, string $databaseId): Database
     {
-        $response = $this->makeRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseId}");
+        $response = $this->sendRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseId}");
 
         return Database::fromArray($response['database']);
     }
 
     public function roles(string $projectId, string $branchId): array
     {
-        return $this->makeRequest('GET', "projects/{$projectId}/branches/{$branchId}/roles");
+        return $this->sendRequest('GET', "projects/{$projectId}/branches/{$branchId}/roles");
     }
 
     public function role(string $projectId, string $branchId, string $roleName): Role
     {
-        $data = $this->makeRequest('GET', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
+        $data = $this->sendRequest('GET', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
 
         return Role::fromArray($data['role']);
     }
@@ -270,34 +239,34 @@ class NeonApi
     {
         $data = ['role' => ['name' => $roleName]];
 
-        return $this->makeRequest('POST', "projects/{$projectId}/branches/{$branchId}/roles", ['json' => $data]);
+        return $this->sendRequest('POST', "projects/{$projectId}/branches/{$branchId}/roles", ['json' => $data]);
     }
 
     public function deleteRole(string $projectId, string $branchId, string $roleName): array
     {
-        return $this->makeRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
+        return $this->sendRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
     }
 
     public function revealRolePassword(string $projectId, string $branchId, string $roleName): array
     {
-        return $this->makeRequest('POST', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}/reveal_password");
+        return $this->sendRequest('POST', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}/reveal_password");
     }
 
     public function resetRolePassword(string $projectId, string $branchId, string $roleName): array
     {
-        return $this->makeRequest('POST', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}/reset_password");
+        return $this->sendRequest('POST', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}/reset_password");
     }
 
     public function operations(string $projectId, ?string $cursor = null, ?int $limit = null): array
     {
         $params = $this->compactArray(['cursor' => $cursor, 'limit' => $limit]);
 
-        return $this->makeRequest('GET', "projects/{$projectId}/operations", ['query' => $params]);
+        return $this->sendRequest('GET', "projects/{$projectId}/operations", ['query' => $params]);
     }
 
     public function operation(string $projectId, string $operationId): Operation
     {
-        $data = $this->makeRequest('GET', "projects/{$projectId}/operations/{$operationId}");
+        $data = $this->sendRequest('GET', "projects/{$projectId}/operations/{$operationId}");
 
         return Operation::fromArray($data['operation']);
     }
