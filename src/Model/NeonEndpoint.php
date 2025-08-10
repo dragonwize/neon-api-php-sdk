@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Model;
 
-readonly class Endpoint
+readonly class NeonEndpoint implements \JsonSerializable
 {
     public function __construct(
         public string $host,
@@ -32,7 +32,7 @@ readonly class Endpoint
         public ?bool $suspend = null,
     ) {}
 
-    public static function fromArray(array $data): self
+    public static function create(array $data): self
     {
         return new self(
             host: $data['host'],
@@ -61,7 +61,7 @@ readonly class Endpoint
         );
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return array_filter([
             'host'                     => $this->host,

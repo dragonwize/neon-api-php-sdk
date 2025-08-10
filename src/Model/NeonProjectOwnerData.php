@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Model;
 
-readonly class ProjectOwnerData
+readonly class NeonProjectOwnerData implements \JsonSerializable
 {
     public function __construct(
         public string $email,
@@ -13,7 +13,7 @@ readonly class ProjectOwnerData
         public string $subscriptionType,
     ) {}
 
-    public static function fromArray(array $data): self
+    public static function create(array $data): self
     {
         return new self(
             email: $data['email'],
@@ -23,7 +23,7 @@ readonly class ProjectOwnerData
         );
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'email'             => $this->email,

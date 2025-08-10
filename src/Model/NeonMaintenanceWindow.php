@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Model;
 
-readonly class MaintenanceWindow
+readonly class NeonMaintenanceWindow implements \JsonSerializable
 {
     public function __construct(
         /** @var int[] */
@@ -13,7 +13,7 @@ readonly class MaintenanceWindow
         public string $endTime,
     ) {}
 
-    public static function fromArray(array $data): self
+    public static function create(array $data): self
     {
         return new self(
             weekdays: $data['weekdays'],
@@ -22,7 +22,7 @@ readonly class MaintenanceWindow
         );
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'weekdays'   => $this->weekdays,

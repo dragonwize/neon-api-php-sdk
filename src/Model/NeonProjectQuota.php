@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Model;
 
-readonly class ProjectQuota
+readonly class NeonProjectQuota implements \JsonSerializable
 {
     public function __construct(
         public ?int $activeTimeSeconds = null,
@@ -14,7 +14,7 @@ readonly class ProjectQuota
         public ?int $logicalSizeBytes = null,
     ) {}
 
-    public static function fromArray(array $data): self
+    public static function create(array $data): self
     {
         return new self(
             activeTimeSeconds: $data['active_time_seconds'] ?? null,
@@ -25,7 +25,7 @@ readonly class ProjectQuota
         );
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return array_filter([
             'active_time_seconds'  => $this->activeTimeSeconds,
