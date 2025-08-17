@@ -38,7 +38,8 @@
             "description": "These methods allow you to create and manage API keys for your Neon account. For related information, see [Manage API keys](https://neon.tech/docs/manage/api-keys)."
         },
         {
-            "name":        "Operation",
+            "name":        "",
+
             "description": "These methods allow you to view operation details for your Neon project. For related information, see [Operations](https://neon.tech/docs/manage/operations)."
         },
         {
