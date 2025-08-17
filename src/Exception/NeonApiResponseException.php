@@ -9,8 +9,13 @@ use Psr\Http\Message\ResponseInterface;
 class NeonApiResponseException extends NeonApiException
 {
     public readonly ResponseInterface $response;
+
+    /** @var array<mixed>|null */
     public readonly ?array $responseBody;
 
+    /**
+     * @param array<mixed>|null $responseBody
+     */
     public function __construct(
         ResponseInterface $response,
         ?array $responseBody = null,

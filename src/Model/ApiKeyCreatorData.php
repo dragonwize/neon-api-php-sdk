@@ -15,11 +15,11 @@ readonly class ApiKeyCreatorData implements NeonModelInterface
     /**
      * Create a hydrated instance with API response data.
      *
-     * @param array<string, string|int|bool|object|array|null> $data
+     * @param array<string, mixed> $data
      */
-    public static function create(array $data): static
+    public static function create(array $data): self
     {
-        return new static(
+        return new self(
             id: $data['id'],
             name: $data['name'],
             image: $data['image'],
@@ -29,7 +29,7 @@ readonly class ApiKeyCreatorData implements NeonModelInterface
     /**
      * Translate model to array with API field names and values for JSON encoding.
      *
-     * @return array<string, string|int|bool|object|array|null>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

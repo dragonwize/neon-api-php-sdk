@@ -14,6 +14,6 @@ class NeonApiRequestException extends NeonApiException
     {
         $this->request = $request;
 
-        parent::__construct('Neon API request failed: ' . $previous->getMessage(), $previous->getCode(), $previous);
+        parent::__construct('Neon API request failed: ' . $previous?->getMessage(), $previous?->getCode() ?? 0, $previous);
     }
 }

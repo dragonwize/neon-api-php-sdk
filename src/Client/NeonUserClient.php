@@ -37,6 +37,8 @@ class NeonUserClient
      *
      * @see https://api-docs.neon.tech/reference/getcurrentuserorganizations
      *
+     * @return array<string, mixed>
+     *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
      */
@@ -52,8 +54,10 @@ class NeonUserClient
      *
      * @see https://api-docs.neon.tech/reference/transferprojectsfromusertoorg
      *
-     * @param string $destinationOrgId The destination organization identifier
-     * @param array  $projectIds       The list of project IDs to transfer (max 400)
+     * @param string        $destinationOrgId The destination organization identifier
+     * @param array<string> $projectIds       The list of project IDs to transfer (max 400)
+     *
+     * @return array<string, mixed>
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException

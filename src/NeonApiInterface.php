@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Dragonwize\NeonApiSdk;
 
 use Dragonwize\NeonApiSdk\Exception\NeonApiException;
+use Dragonwize\NeonApiSdk\Model\NeonModelInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 /**
  * Neon API configuration and utility methods.
@@ -21,7 +23,9 @@ interface NeonApiInterface
 
     public function getHttpClient(): ClientInterface;
 
-    public function getHttpMessageFactory(): RequestFactoryInterface;
+    public function getRequestFactory(): RequestFactoryInterface;
+
+    public function getStreamFactory(): StreamFactoryInterface;
 
     /**
      * Creates a new PSR-7 request with some default configuration.
@@ -38,14 +42,57 @@ interface NeonApiInterface
     /**
      * Decodes a PSR-7 response body into a PHP array.
      *
+     * @return array<mixed>|null
+     *
      * @throws NeonApiException
      */
-    public function parseResponse(ResponseInterface $response): array;
+    public function parseResponse(ResponseInterface $response): ?array;
 
     /**
      * Create a HTTP query string from an array of parameters.
      *
-     * @param array<string, string|int|bool> $params
+     * @param array<string, mixed> $params
      */
     public function buildQuery(array $params): string;
+
+    /**
+     * Convenient method to make a GET request to the Neon API.
+     *
+     * @return array<mixed>
+     */
+    public function get(string $uri): array;
+
+    /**
+     * Convenient method to make a POST request to the Neon API.
+     *
+     * @param NeonModelInterface|array<mixed>|null $body
+     *
+     * @return array<mixed>
+     */
+    public function post(string $uri, NeonModelInterface|array|null $body = null): array;
+
+    /**
+     * Convenient method to make a PATCH request to the Neon API.
+     *
+     * @param NeonModelInterface|array<mixed>|null $body
+     *
+     * @return array<mixed>
+     */
+    public function patch(string $uri, NeonModelInterface|array|null $body = null): array;
+
+    /**
+     * Convenient method to make a PUT request to the Neon API.
+     *
+     * @param NeonModelInterface|array<mixed>|null $body
+     *
+     * @return array<mixed>
+     */
+    public function put(string $uri, NeonModelInterface|array|null $body = null): array;
+
+    /**
+     * Convenient method to make a DELETE request to the Neon API.
+     *
+     * @return array<mixed>
+     */
+    public function delete(string $uri): array;
 }

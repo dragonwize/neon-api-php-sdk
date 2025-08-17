@@ -69,7 +69,7 @@ class NeonDatabaseClient
      *
      * @see https://api-docs.neon.tech/reference/createprojectbranchdatabase
      *
-     * @param array $data Database creation data (name, owner_name)
+     * @param array<string, mixed> $data Database creation data (name, owner_name)
      *
      * @return array{database: NeonDatabase, operations: array<NeonOperation>}
      *
@@ -99,7 +99,7 @@ class NeonDatabaseClient
      *
      * @see https://api-docs.neon.tech/reference/updateprojectbranchdatabase
      *
-     * @param array $data Database update data (name, owner_name)
+     * @param array<string, mixed> $data Database update data (name, owner_name)
      *
      * @return array{database: NeonDatabase, operations: array<NeonOperation>}
      *
@@ -108,7 +108,7 @@ class NeonDatabaseClient
      */
     public function update(string $projectId, string $branchId, string $databaseName, array $data): array
     {
-        $response = $this->api->sendRequest('PATCH', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseName}", ['json' => ['database' => $data]]);
+        $response = $this->api->patch("projects/{$projectId}/branches/{$branchId}/databases/{$databaseName}", ['database' => $data]);
 
         $operations = [];
         foreach ($response['operations'] as $operation) {
@@ -136,7 +136,7 @@ class NeonDatabaseClient
      */
     public function delete(string $projectId, string $branchId, string $databaseName): array
     {
-        $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseName}");
+        $response = $this->api->delete("projects/{$projectId}/branches/{$branchId}/databases/{$databaseName}");
 
         $operations = [];
         foreach ($response['operations'] as $operation) {

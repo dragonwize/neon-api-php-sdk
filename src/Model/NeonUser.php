@@ -6,6 +6,10 @@ namespace Dragonwize\NeonApiSdk\Model;
 
 readonly class NeonUser implements NeonModelInterface
 {
+    /**
+     * @param array<string, mixed>      $authAccounts
+     * @param array<string, mixed>|null $billingAccount
+     */
     public function __construct(
         public int $activeSecondsLimit,
         public string $id,
@@ -26,11 +30,11 @@ readonly class NeonUser implements NeonModelInterface
     /**
      * Create a hydrated instance with API response data.
      *
-     * @param array<string, string|int|bool|object|array|null> $data
+     * @param array<string, mixed> $data
      */
-    public static function create(array $data): static
+    public static function create(array $data): self
     {
-        return new static(
+        return new self(
             activeSecondsLimit: $data['active_seconds_limit'],
             id: $data['id'],
             email: $data['email'],
@@ -51,7 +55,7 @@ readonly class NeonUser implements NeonModelInterface
     /**
      * Translate model to array with API field names and values for JSON encoding.
      *
-     * @return array<string, string|int|bool|object|array|null>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

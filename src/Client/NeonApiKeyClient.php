@@ -78,7 +78,7 @@ class NeonApiKeyClient
      */
     public function revoke(int $keyId): NeonApiKey
     {
-        $response = $this->api->sendRequest('DELETE', "api_keys/{$keyId}");
+        $response = $this->api->delete("api_keys/{$keyId}");
 
         return NeonApiKey::create($response);
     }

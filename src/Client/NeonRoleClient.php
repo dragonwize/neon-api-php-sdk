@@ -74,7 +74,7 @@ class NeonRoleClient
      *
      * @see https://api-docs.neon.tech/reference/createprojectbranchrole
      *
-     * @param array $data Role creation data (name)
+     * @param array<string, mixed> $data Role creation data (name)
      *
      * @return array{role: NeonRole, operations: array<NeonOperation>}
      *
@@ -113,7 +113,7 @@ class NeonRoleClient
      */
     public function delete(string $projectId, string $branchId, string $roleName): array
     {
-        $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
+        $response = $this->api->delete("projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
 
         $operations = [];
         foreach ($response['operations'] as $operation) {

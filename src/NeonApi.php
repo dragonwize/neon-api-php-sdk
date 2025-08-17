@@ -12,6 +12,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -38,12 +39,21 @@ class NeonApi implements NeonApiInterface
     protected ClientInterface $httpClient;
 
     /**
-     * Request factory object to be used for creating HTTP requests.
+     * Request factory.
      *
      * This can be any PSR-17 compliant request factory.
      * Examples: Symfony RequestFactory, GuzzleHttp\Psr7\RequestFactory, etc.
      */
-    protected RequestFactoryInterface $httpMessageFactory;
+    protected RequestFactoryInterface $requestFactory;
+
+    /**
+     * Stream factory.
+     *
+     * This can be any PSR-17 compliant request factory as they often implement
+     * many of the PSR-17 interfaces.
+     * Examples: Symfony RequestFactory, GuzzleHttp\Psr7\RequestFactory, etc.
+     */
+    protected StreamFactoryInterface $streamFactory;
 
     /**
      * Optional Error Logger.
@@ -62,14 +72,17 @@ class NeonApi implements NeonApiInterface
     public function __construct(
         string $apiKey,
         ClientInterface $httpClient,
-        RequestFactoryInterface $httpMessageFactory,
+        RequestFactoryInterface $requestFactory,
+        StreamFactoryInterface $streamFactory,
         ?LoggerInterface $logger = null,
         string $baseUrl = self::BASE_URL
     ) {
-        $this->apiKey             = $apiKey;
-        $this->httpClient         = $httpClient;
-        $this->httpMessageFactory = $httpMessageFactory;
-        $this->baseUrl            = $baseUrl;
+        $this->apiKey         = $apiKey;
+        $this->httpClient     = $httpClient;
+        $this->requestFactory = $requestFactory;
+        $this->streamFactory  = $streamFactory;
+        $this->logger         = $logger;
+        $this->baseUrl        = $baseUrl;
     }
 
     public function getApiKey(): string
@@ -87,9 +100,14 @@ class NeonApi implements NeonApiInterface
         return $this->httpClient;
     }
 
-    public function getHttpMessageFactory(): RequestFactoryInterface
+    public function getRequestFactory(): RequestFactoryInterface
     {
-        return $this->httpMessageFactory;
+        return $this->requestFactory;
+    }
+
+    public function getStreamFactory(): StreamFactoryInterface
+    {
+        return $this->streamFactory;
     }
 
     public function getLogger(): ?LoggerInterface
@@ -114,11 +132,13 @@ class NeonApi implements NeonApiInterface
     {
         $request = $this->createRequest('GET', $uri);
 
-        return $this->parseResponse($this->sendRequest($request));
+        return $this->parseResponse($this->sendRequest($request)) ?? [];
     }
 
     /**
      * Convient method to make a POST request to the Neon API.
+     *
+     * @param NeonModelInterface|array<mixed>|null $body
      *
      * @return array<mixed>
      *
@@ -129,10 +149,10 @@ class NeonApi implements NeonApiInterface
     {
         $request = $this->createRequest('POST', $uri);
         if ($body) {
-            $request = $request->withBody($this->httpMessageFactory->createStream(json_encode($body)));
+            $request = $request->withBody($this->streamFactory->createStream((string) json_encode($body)));
         }
 
-        return $this->parseResponse($this->sendRequest($request));
+        return $this->parseResponse($this->sendRequest($request)) ?? [];
     }
 
     /**
@@ -147,10 +167,10 @@ class NeonApi implements NeonApiInterface
     {
         $request = $this->createRequest('PATCH', $uri);
         if ($body) {
-            $request = $request->withBody($this->httpMessageFactory->createStream(json_encode($body)));
+            $request = $request->withBody($this->streamFactory->createStream((string) json_encode($body)));
         }
 
-        return $this->parseResponse($this->sendRequest($request));
+        return $this->parseResponse($this->sendRequest($request)) ?? [];
     }
 
     /**
@@ -165,10 +185,10 @@ class NeonApi implements NeonApiInterface
     {
         $request = $this->createRequest('PUT', $uri);
         if ($body) {
-            $request = $request->withBody($this->httpMessageFactory->createStream(json_encode($body)));
+            $request = $request->withBody($this->streamFactory->createStream((string) json_encode($body)));
         }
 
-        return $this->parseResponse($this->sendRequest($request));
+        return $this->parseResponse($this->sendRequest($request)) ?? [];
     }
 
     /**
@@ -183,7 +203,7 @@ class NeonApi implements NeonApiInterface
     {
         $request = $this->createRequest('DELETE', $uri);
 
-        return $this->parseResponse($this->sendRequest($request));
+        return $this->parseResponse($this->sendRequest($request)) ?? [];
     }
 
     /**
@@ -191,7 +211,7 @@ class NeonApi implements NeonApiInterface
      */
     public function createRequest(string $method, string $uri): RequestInterface
     {
-        $request = $this->httpMessageFactory
+        $request = $this->requestFactory
             ->createRequest($method, $this->baseUrl . $uri)
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json')
@@ -218,8 +238,8 @@ class NeonApi implements NeonApiInterface
     /**
      * Decodes a PSR-7 response body into a PHP array.
      *
-     * @return array<string, mixed>|null
-     *                                   Decoded response body as an array, or null if the response is invalid
+     * @return array<mixed>|null
+     *                           Decoded response body as an array, or null if the response is invalid
      *
      * @throws NeonApiResponseException
      */
@@ -246,7 +266,7 @@ class NeonApi implements NeonApiInterface
     /**
      * Create a HTTP query string from an array of parameters.
      *
-     * @param array<string, string|int|bool> $params
+     * @param array<string, mixed> $params
      */
     public function buildQuery(array $params): string
     {

@@ -76,8 +76,8 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/createprojectendpoint
      *
-     * @param string $projectId The Neon project ID
-     * @param array  $data      Endpoint creation data (branch_id, type, etc.)
+     * @param string               $projectId The Neon project ID
+     * @param array<string, mixed> $data      Endpoint creation data (branch_id, type, etc.)
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
      *
@@ -108,9 +108,9 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/updateprojectendpoint
      *
-     * @param string $projectId  The Neon project ID
-     * @param string $endpointId The endpoint ID
-     * @param array  $data       Endpoint update data
+     * @param string               $projectId  The Neon project ID
+     * @param string               $endpointId The endpoint ID
+     * @param array<string, mixed> $data       Endpoint update data
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
      *
@@ -119,7 +119,7 @@ class NeonEndpointClient
      */
     public function update(string $projectId, string $endpointId, array $data): array
     {
-        $response = $this->api->sendRequest('PATCH', "projects/{$projectId}/endpoints/{$endpointId}", ['json' => ['endpoint' => $data]]);
+        $response = $this->api->patch("projects/{$projectId}/endpoints/{$endpointId}", ['endpoint' => $data]);
 
         $operations = [];
         foreach ($response['operations'] as $operation) {
@@ -151,7 +151,7 @@ class NeonEndpointClient
      */
     public function delete(string $projectId, string $endpointId): array
     {
-        $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/endpoints/{$endpointId}");
+        $response = $this->api->delete("projects/{$projectId}/endpoints/{$endpointId}");
 
         $operations = [];
         foreach ($response['operations'] as $operation) {

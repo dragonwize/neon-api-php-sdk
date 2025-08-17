@@ -23,12 +23,14 @@ class NeonConsumptionClient
      *
      * @see https://api-docs.neon.tech/reference/getconsumptionhistorypertaccount
      *
-     * @param string      $from             Start date-time for the consumption period
-     * @param string      $to               End date-time for the consumption period
-     * @param string      $granularity      Granularity of consumption metrics (hourly, daily, monthly)
-     * @param string|null $orgId            Organization ID for which metrics should be returned
-     * @param bool|null   $includeV1Metrics Deprecated. Use $metrics instead
-     * @param array|null  $metrics          List of metrics to include in response
+     * @param string                    $from             Start date-time for the consumption period
+     * @param string                    $to               End date-time for the consumption period
+     * @param string                    $granularity      Granularity of consumption metrics (hourly, daily, monthly)
+     * @param string|null               $orgId            Organization ID for which metrics should be returned
+     * @param bool|null                 $includeV1Metrics Deprecated. Use $metrics instead
+     * @param array<string, mixed>|null $metrics          List of metrics to include in response
+     *
+     * @return array<mixed>
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
@@ -52,7 +54,7 @@ class NeonConsumptionClient
 
         $response = $this->api->get('consumption_history/account' . $this->api->buildQuery($params));
         $metrics  = [];
-        foreach ($project['periods'] as $period) {
+        foreach ($response['periods'] as $period) {
             $metrics[] = NeonPeriod::create($period);
         }
 
@@ -66,15 +68,17 @@ class NeonConsumptionClient
      *
      * @see https://api-docs.neon.tech/reference/getconsumptionhistoryperproject
      *
-     * @param string      $from             Start date-time for the consumption period
-     * @param string      $to               End date-time for the consumption period
-     * @param string      $granularity      Granularity of consumption metrics (hourly, daily, monthly)
-     * @param string|null $cursor           Cursor value from previous response for pagination
-     * @param int         $limit            Number of projects to return (1-100)
-     * @param array|null  $projectIds       List of project IDs to filter the response
-     * @param string|null $orgId            Organization ID for which project metrics should be returned
-     * @param bool|null   $includeV1Metrics Deprecated. Use $metrics instead
-     * @param array|null  $metrics          List of metrics to include in response
+     * @param string                    $from             Start date-time for the consumption period
+     * @param string                    $to               End date-time for the consumption period
+     * @param string                    $granularity      Granularity of consumption metrics (hourly, daily, monthly)
+     * @param string|null               $cursor           Cursor value from previous response for pagination
+     * @param int                       $limit            Number of projects to return (1-100)
+     * @param array<string, mixed>|null $projectIds       List of project IDs to filter the response
+     * @param string|null               $orgId            Organization ID for which project metrics should be returned
+     * @param bool|null                 $includeV1Metrics Deprecated. Use $metrics instead
+     * @param array<string, mixed>|null $metrics          List of metrics to include in response
+     *
+     * @return array<mixed>
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException

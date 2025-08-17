@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Model;
 
-readonly class NeonMaintenanceWindow implements \JsonSerializable
+readonly class NeonMaintenanceWindow implements NeonModelInterface
 {
     public function __construct(
         /** @var int[] */
@@ -13,6 +13,11 @@ readonly class NeonMaintenanceWindow implements \JsonSerializable
         public string $endTime,
     ) {}
 
+    /**
+     * Create a hydrated instance with API response data.
+     *
+     * @param array<string, mixed> $data
+     */
     public static function create(array $data): self
     {
         return new self(
@@ -22,6 +27,11 @@ readonly class NeonMaintenanceWindow implements \JsonSerializable
         );
     }
 
+    /**
+     * Translate model to array with API field names and values for JSON encoding.
+     *
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return [

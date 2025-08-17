@@ -96,10 +96,9 @@ class NeonProjectClient
      */
     public function get(string $projectId): NeonProject
     {
-        $response        = $this->api->get('projects/' . $projectId);
-        $responseContent = $this->api->parseResponse($response);
+        $response = $this->api->get('projects/' . $projectId);
 
-        return NeonProject::create($responseContent['project']);
+        return NeonProject::create($response['project']);
     }
 
     /**
@@ -118,7 +117,7 @@ class NeonProjectClient
     {
         $response = $this->api->post('projects', $project);
 
-        return NeonProject::create($responseContent['project']);
+        return NeonProject::create($response['project']);
     }
 
     /**
@@ -133,7 +132,7 @@ class NeonProjectClient
      */
     public function update(NeonProject $project): NeonProject
     {
-        $response = $this->api->sendRequest('PATCH', "projects/{$projectId}", ['json' => $data]);
+        $response = $this->api->patch("projects/{$project->id}", $project);
 
         return NeonProject::create($response['project']);
     }
@@ -153,7 +152,7 @@ class NeonProjectClient
      */
     public function delete(string $projectId): NeonProject
     {
-        $response = $this->api->sendRequest('DELETE', "projects/{$projectId}");
+        $response = $this->api->delete("projects/{$projectId}");
 
         return NeonProject::create($response['project']);
     }

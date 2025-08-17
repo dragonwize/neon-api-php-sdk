@@ -24,15 +24,16 @@ readonly class NeonProject implements NeonModelInterface
         public ?bool $proxyHost = null,
         public ?string $branchLogicalSizeLimit = null,
         public ?string $branchLogicalSizeLimitBytes = null,
-        public ?ProjectOwnerData $owner = null,
+        public ?NeonProjectOwnerData $owner = null,
         public ?string $ownerData = null,
         public ?string $parentId = null,
         public ?string $deletionProtection = null,
         public ?string $storePasswords = null,
+        /** @var array<string, mixed>|null */
         public ?array $settings = null,
-        public ?ProjectQuota $quota = null,
+        public ?NeonProjectQuota $quota = null,
         public ?string $orgId = null,
-        public ?MaintenanceWindow $maintenanceStarts = null,
+        public ?NeonMaintenanceWindow $maintenanceStarts = null,
         public ?string $createdBy = null,
         public ?string $maintenanceStarts2 = null,
     ) {}
@@ -40,11 +41,11 @@ readonly class NeonProject implements NeonModelInterface
     /**
      * Create a hydrated instance with API response data.
      *
-     * @param array<string, string|int|bool|object|array|null> $data
+     * @param array<string, mixed> $data
      */
-    public static function create(array $data): static
+    public static function create(array $data): self
     {
-        return new static(
+        return new self(
             id: $data['id'],
             platformId: $data['platform_id'] ?? null,
             regionId: $data['region_id'] ?? null,
@@ -62,15 +63,15 @@ readonly class NeonProject implements NeonModelInterface
             proxyHost: $data['proxy_host'] ?? null,
             branchLogicalSizeLimit: $data['branch_logical_size_limit'] ?? null,
             branchLogicalSizeLimitBytes: $data['branch_logical_size_limit_bytes'] ?? null,
-            owner: ProjectOwnerData::create($data['owner']) ?? null,
+            owner: isset($data['owner']) ? NeonProjectOwnerData::create($data['owner']) : null,
             ownerData: $data['owner_data'] ?? null,
             parentId: $data['parent_id'] ?? null,
             deletionProtection: $data['deletion_protection'] ?? null,
             storePasswords: $data['store_passwords'] ?? null,
             settings: $data['settings'] ?? null,
-            quota: isset($data['quota']) ? ProjectQuota::create($data['quota']) : null,
+            quota: isset($data['quota']) ? NeonProjectQuota::create($data['quota']) : null,
             orgId: $data['org_id'] ?? null,
-            maintenanceStarts: isset($data['maintenance_starts']) ? MaintenanceWindow::create($data['maintenance_starts']) : null,
+            maintenanceStarts: isset($data['maintenance_starts']) ? NeonMaintenanceWindow::create($data['maintenance_starts']) : null,
             createdBy: $data['created_by'] ?? null,
             maintenanceStarts2: $data['maintenance_starts_2'] ?? null,
         );
@@ -79,7 +80,7 @@ readonly class NeonProject implements NeonModelInterface
     /**
      * Translate model to array with API field names and values for JSON encoding.
      *
-     * @return array<string, string|int|bool|object|array|null>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -101,7 +102,7 @@ readonly class NeonProject implements NeonModelInterface
             'proxy_host'                      => $this->proxyHost,
             'branch_logical_size_limit'       => $this->branchLogicalSizeLimit,
             'branch_logical_size_limit_bytes' => $this->branchLogicalSizeLimitBytes,
-            'owner'                           => $this->owner->jsonSerialize(),
+            'owner'                           => $this->owner?->jsonSerialize(),
             'owner_data'                      => $this->ownerData,
             'parent_id'                       => $this->parentId,
             'deletion_protection'             => $this->deletionProtection,

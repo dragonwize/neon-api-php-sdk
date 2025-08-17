@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Model;
 
-readonly class NeonRole implements \JsonSerializable
+readonly class NeonRole implements NeonModelInterface
 {
     public function __construct(
         public string $branchId,
@@ -15,6 +15,11 @@ readonly class NeonRole implements \JsonSerializable
         public ?bool $protected = null,
     ) {}
 
+    /**
+     * Create a hydrated instance with API response data.
+     *
+     * @param array<string, mixed> $data
+     */
     public static function create(array $data): self
     {
         return new self(
@@ -27,6 +32,11 @@ readonly class NeonRole implements \JsonSerializable
         );
     }
 
+    /**
+     * Translate model to array with API field names and values for JSON encoding.
+     *
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return array_filter([

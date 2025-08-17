@@ -26,9 +26,11 @@ class NeonSnapshotClient
      *
      * @see https://api-docs.neon.tech/reference/createbranchsnapshot
      *
-     * @param string $projectId The Neon project ID
-     * @param string $branchId  The branch ID
-     * @param array  $data      Snapshot creation data
+     * @param string               $projectId The Neon project ID
+     * @param string               $branchId  The branch ID
+     * @param array<string, mixed> $data      Snapshot creation data
+     *
+     * @return array<string, mixed>
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
@@ -68,16 +70,16 @@ class NeonSnapshotClient
      *
      * @see https://api-docs.neon.tech/reference/updatesnapshot
      *
-     * @param string $projectId  The Neon project ID
-     * @param string $snapshotId The snapshot ID
-     * @param array  $data       Snapshot update data
+     * @param string               $projectId  The Neon project ID
+     * @param string               $snapshotId The snapshot ID
+     * @param array<string, mixed> $data       Snapshot update data
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
      */
     public function update(string $projectId, string $snapshotId, array $data): NeonSnapshot
     {
-        $response = $this->api->sendRequest('PATCH', "projects/{$projectId}/snapshots/{$snapshotId}", ['json' => ['snapshot' => $data]]);
+        $response = $this->api->patch("projects/{$projectId}/snapshots/{$snapshotId}", ['snapshot' => $data]);
 
         return NeonSnapshot::create($response['snapshot']);
     }
@@ -95,7 +97,7 @@ class NeonSnapshotClient
      */
     public function delete(string $projectId, string $snapshotId): NeonSnapshot
     {
-        $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/snapshots/{$snapshotId}");
+        $response = $this->api->delete("projects/{$projectId}/snapshots/{$snapshotId}");
 
         return NeonSnapshot::create($response['snapshot']);
     }
@@ -105,9 +107,9 @@ class NeonSnapshotClient
      *
      * @see https://api-docs.neon.tech/reference/restoresnapshot
      *
-     * @param string $projectId  The Neon project ID
-     * @param string $snapshotId The snapshot ID
-     * @param array  $data       Restore configuration data
+     * @param string               $projectId  The Neon project ID
+     * @param string               $snapshotId The snapshot ID
+     * @param array<string, mixed> $data       Restore configuration data
      *
      * @return array{branch: NeonBranch, endpoints: array<NeonEndpoint>, operations: array<NeonOperation>}
      *
