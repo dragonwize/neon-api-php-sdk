@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
@@ -13,8 +15,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonEndpointClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Retrieves a list of compute endpoints for the specified project.
@@ -33,7 +34,7 @@ class NeonEndpointClient
      */
     public function list(string $projectId): array
     {
-        $response = $this->api->get("projects/{$projectId}/endpoints");
+        $response  = $this->api->get("projects/{$projectId}/endpoints");
         $endpoints = [];
         foreach ($response['endpoints'] as $endpoint) {
             $endpoints[] = NeonEndpoint::create($endpoint);
@@ -52,7 +53,7 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/getprojectendpoint
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $endpointId The endpoint ID
      *
      * @throws NeonApiRequestException
@@ -61,7 +62,7 @@ class NeonEndpointClient
     public function get(string $projectId, string $endpointId): NeonEndpoint
     {
         $response = $this->api->get("projects/{$projectId}/endpoints/{$endpointId}");
-        
+
         return NeonEndpoint::create($response['endpoint']);
     }
 
@@ -76,7 +77,7 @@ class NeonEndpointClient
      * @see https://api-docs.neon.tech/reference/createprojectendpoint
      *
      * @param string $projectId The Neon project ID
-     * @param array $data Endpoint creation data (branch_id, type, etc.)
+     * @param array  $data      Endpoint creation data (branch_id, type, etc.)
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
      *
@@ -86,15 +87,15 @@ class NeonEndpointClient
     public function create(string $projectId, array $data): array
     {
         $response = $this->api->post("projects/{$projectId}/endpoints", ['endpoint' => $data]);
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'endpoint' => NeonEndpoint::create($response['endpoint']),
-            'operations' => $operations
+            'endpoint'   => NeonEndpoint::create($response['endpoint']),
+            'operations' => $operations,
         ];
     }
 
@@ -107,9 +108,9 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/updateprojectendpoint
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $endpointId The endpoint ID
-     * @param array $data Endpoint update data
+     * @param array  $data       Endpoint update data
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
      *
@@ -119,15 +120,15 @@ class NeonEndpointClient
     public function update(string $projectId, string $endpointId, array $data): array
     {
         $response = $this->api->sendRequest('PATCH', "projects/{$projectId}/endpoints/{$endpointId}", ['json' => ['endpoint' => $data]]);
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'endpoint' => NeonEndpoint::create($response['endpoint']),
-            'operations' => $operations
+            'endpoint'   => NeonEndpoint::create($response['endpoint']),
+            'operations' => $operations,
         ];
     }
 
@@ -140,7 +141,7 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/deleteprojectendpoint
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $endpointId The endpoint ID
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
@@ -151,15 +152,15 @@ class NeonEndpointClient
     public function delete(string $projectId, string $endpointId): array
     {
         $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/endpoints/{$endpointId}");
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'endpoint' => NeonEndpoint::create($response['endpoint']),
-            'operations' => $operations
+            'endpoint'   => NeonEndpoint::create($response['endpoint']),
+            'operations' => $operations,
         ];
     }
 
@@ -170,7 +171,7 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/startprojectendpoint
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $endpointId The endpoint ID
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
@@ -181,15 +182,15 @@ class NeonEndpointClient
     public function start(string $projectId, string $endpointId): array
     {
         $response = $this->api->post("projects/{$projectId}/endpoints/{$endpointId}/start");
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'endpoint' => NeonEndpoint::create($response['endpoint']),
-            'operations' => $operations
+            'endpoint'   => NeonEndpoint::create($response['endpoint']),
+            'operations' => $operations,
         ];
     }
 
@@ -202,7 +203,7 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/suspendprojectendpoint
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $endpointId The endpoint ID
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
@@ -213,15 +214,15 @@ class NeonEndpointClient
     public function suspend(string $projectId, string $endpointId): array
     {
         $response = $this->api->post("projects/{$projectId}/endpoints/{$endpointId}/suspend");
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'endpoint' => NeonEndpoint::create($response['endpoint']),
-            'operations' => $operations
+            'endpoint'   => NeonEndpoint::create($response['endpoint']),
+            'operations' => $operations,
         ];
     }
 
@@ -234,7 +235,7 @@ class NeonEndpointClient
      *
      * @see https://api-docs.neon.tech/reference/restartprojectendpoint
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $endpointId The endpoint ID
      *
      * @return array{endpoint: NeonEndpoint, operations: array<NeonOperation>}
@@ -245,15 +246,15 @@ class NeonEndpointClient
     public function restart(string $projectId, string $endpointId): array
     {
         $response = $this->api->post("projects/{$projectId}/endpoints/{$endpointId}/restart");
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'endpoint' => NeonEndpoint::create($response['endpoint']),
-            'operations' => $operations
+            'endpoint'   => NeonEndpoint::create($response['endpoint']),
+            'operations' => $operations,
         ];
     }
 }

@@ -1,11 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
 use Dragonwize\NeonApiSdk\Exception\NeonApiRequestException;
 use Dragonwize\NeonApiSdk\Exception\NeonApiResponseException;
 use Dragonwize\NeonApiSdk\Model\NeonApiKey;
-use Dragonwize\NeonApiSdk\Model\NeonApiKeyCreateResponse;
 use Dragonwize\NeonApiSdk\NeonApiInterface;
 
 /**
@@ -13,8 +14,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonApiKeyClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Retrieves the API keys for your Neon account.
@@ -32,7 +32,7 @@ class NeonApiKeyClient
     public function list(): array
     {
         $response = $this->api->get('api_keys');
-        $apiKeys = [];
+        $apiKeys  = [];
         foreach ($response as $apiKey) {
             $apiKeys[] = NeonApiKey::create($apiKey);
         }

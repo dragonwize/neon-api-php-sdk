@@ -27,8 +27,6 @@ readonly class NeonUser implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {
@@ -58,19 +56,19 @@ readonly class NeonUser implements NeonModelInterface
     public function jsonSerialize(): array
     {
         return array_filter([
-            'active_seconds_limit' => $this->activeSecondsLimit,
-            'id' => $this->id,
-            'email' => $this->email,
-            'login' => $this->login,
-            'name' => $this->name,
-            'last_name' => $this->lastName,
-            'image' => $this->image,
-            'projects_limit' => $this->projectsLimit,
-            'branches_limit' => $this->branchesLimit,
+            'active_seconds_limit'  => $this->activeSecondsLimit,
+            'id'                    => $this->id,
+            'email'                 => $this->email,
+            'login'                 => $this->login,
+            'name'                  => $this->name,
+            'last_name'             => $this->lastName,
+            'image'                 => $this->image,
+            'projects_limit'        => $this->projectsLimit,
+            'branches_limit'        => $this->branchesLimit,
             'max_autoscaling_limit' => $this->maxAutoscalingLimit,
-            'auth_accounts' => $this->authAccounts,
-            'plan' => $this->plan,
-            'billing_account' => $this->billingAccount,
+            'auth_accounts'         => $this->authAccounts,
+            'plan'                  => $this->plan,
+            'billing_account'       => $this->billingAccount,
             'compute_seconds_limit' => $this->computeSecondsLimit,
         ], fn ($value) => $value !== null);
     }

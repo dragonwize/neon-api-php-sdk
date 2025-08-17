@@ -10,7 +10,7 @@ readonly class NeonPeriod implements NeonModelInterface
         public ?string $periodId,
         public ?string $periodPlan,
         public ?string $periodStart,
-        public ?string $periodEnd = null,
+        public ?string $periodEnd,
         /** @var array<ConsumptionHistoryPerTimeframe> */
         public array $consumption,
     ) {}
@@ -19,8 +19,6 @@ readonly class NeonPeriod implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {
@@ -46,11 +44,11 @@ readonly class NeonPeriod implements NeonModelInterface
     public function jsonSerialize(): array
     {
         return array_filter([
-            'period_id' => $this->periodId,
-            'period_plan' => $this->periodPlan,
+            'period_id'    => $this->periodId,
+            'period_plan'  => $this->periodPlan,
             'period_start' => $this->periodStart,
-            'period_end' => $this->periodEnd,
-            'consumption' => $this->consumption,
+            'period_end'   => $this->periodEnd,
+            'consumption'  => $this->consumption,
         ], fn ($value) => $value !== null);
     }
 }

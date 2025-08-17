@@ -4,16 +4,9 @@ declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk;
 
-use Dragonwize\NeonApiSdk\Exception\NeonApiException;
 use Dragonwize\NeonApiSdk\Exception\NeonApiRequestException;
 use Dragonwize\NeonApiSdk\Exception\NeonApiResponseException;
-use Dragonwize\NeonApiSdk\Model\Branch;
-use Dragonwize\NeonApiSdk\Model\Database;
-use Dragonwize\NeonApiSdk\Model\Endpoint;
 use Dragonwize\NeonApiSdk\Model\NeonModelInterface;
-use Dragonwize\NeonApiSdk\Model\Operation;
-use Dragonwize\NeonApiSdk\Model\NeonProject;
-use Dragonwize\NeonApiSdk\Model\Role;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -70,7 +63,7 @@ class NeonApi implements NeonApiInterface
         string $apiKey,
         ClientInterface $httpClient,
         RequestFactoryInterface $httpMessageFactory,
-        LoggerInterface $logger = null,
+        ?LoggerInterface $logger = null,
         string $baseUrl = self::BASE_URL
     ) {
         $this->apiKey             = $apiKey;
@@ -226,7 +219,7 @@ class NeonApi implements NeonApiInterface
      * Decodes a PSR-7 response body into a PHP array.
      *
      * @return array<string, mixed>|null
-     *     Decoded response body as an array, or null if the response is invalid.
+     *                                   Decoded response body as an array, or null if the response is invalid
      *
      * @throws NeonApiResponseException
      */
@@ -238,7 +231,7 @@ class NeonApi implements NeonApiInterface
             throw new NeonApiResponseException($response);
         }
 
-        $data = json_decode((string)$response->getBody(), true);
+        $data = json_decode((string) $response->getBody(), true);
 
         if (json_last_error() !== \JSON_ERROR_NONE) {
             $errorMsg = 'Neon response has invalid JSON: ' . json_last_error_msg();
@@ -254,14 +247,12 @@ class NeonApi implements NeonApiInterface
      * Create a HTTP query string from an array of parameters.
      *
      * @param array<string, string|int|bool> $params
-     *
-     * @return string
      */
     public function buildQuery(array $params): string
     {
         $query = http_build_query($params);
 
-        return ($query ? '?' . $query : '');
+        return $query ? '?' . $query : '';
     }
 
     public function logResponseError(ResponseInterface $response, string $msgPrefix = 'Neon API request failed: '): void
@@ -271,7 +262,7 @@ class NeonApi implements NeonApiInterface
             return;
         }
 
-        $error   = json_decode((string)$response->getBody(), true);
+        $error   = json_decode((string) $response->getBody(), true);
         $message = $msgPrefix . "[{$response->getStatusCode()}:{$response->getReasonPhrase()}] ";
         $message .= $error['message'] ?? 'No error message provided.';
 

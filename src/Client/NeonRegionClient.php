@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
@@ -12,8 +14,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonRegionClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Lists supported Neon regions.
@@ -28,7 +29,7 @@ class NeonRegionClient
     public function list(): array
     {
         $response = $this->api->get('regions');
-        $regions = [];
+        $regions  = [];
         foreach ($response['regions'] as $region) {
             $regions[] = NeonRegion::create($region);
         }

@@ -22,8 +22,6 @@ readonly class NeonConsumption implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {
@@ -48,15 +46,15 @@ readonly class NeonConsumption implements NeonModelInterface
     public function jsonSerialize(): array
     {
         return array_filter([
-            'timeframe_start' => $this->timeframeStart,
-            'timeframe_end' => $this->timeframeEnd,
-            'active_time_seconds' => $this->activeTimeSeconds,
-            'compute_time_seconds' => $this->computeTimeSeconds,
-            'written_data_bytes' => $this->writtenDataBytes,
+            'timeframe_start'              => $this->timeframeStart,
+            'timeframe_end'                => $this->timeframeEnd,
+            'active_time_seconds'          => $this->activeTimeSeconds,
+            'compute_time_seconds'         => $this->computeTimeSeconds,
+            'written_data_bytes'           => $this->writtenDataBytes,
             'synthetic_storage_size_bytes' => $this->syntheticStorageSizeBytes,
-            'data_storage_bytes_hour' => $this->dataStorageBytesHour,
-            'logical_size_bytes' => $this->logicalSizeBytes,
-            'logical_size_bytes_hour' => $this->logicalSizeBytesHour,
+            'data_storage_bytes_hour'      => $this->dataStorageBytesHour,
+            'logical_size_bytes'           => $this->logicalSizeBytes,
+            'logical_size_bytes_hour'      => $this->logicalSizeBytesHour,
         ], fn ($value) => $value !== null);
     }
 }

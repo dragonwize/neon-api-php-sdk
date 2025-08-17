@@ -19,8 +19,6 @@ readonly class NeonApiKey implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {
@@ -42,12 +40,12 @@ readonly class NeonApiKey implements NeonModelInterface
     public function jsonSerialize(): array
     {
         return array_filter([
-            'id' => $this->id,
-            'name' => $this->name,
-            'created_at' => $this->createdAt,
-            'created_by' => $this->createdBy->jsonSerialize(),
+            'id'                  => $this->id,
+            'name'                => $this->name,
+            'created_at'          => $this->createdAt,
+            'created_by'          => $this->createdBy->jsonSerialize(),
             'last_used_from_addr' => $this->lastUsedFromAddr,
-            'last_used_at' => $this->lastUsedAt,
+            'last_used_at'        => $this->lastUsedAt,
         ], fn ($value) => $value !== null);
     }
 }

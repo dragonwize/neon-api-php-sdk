@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
@@ -12,8 +14,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonOperationClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Retrieves a list of operations for the specified Neon project.
@@ -26,9 +27,9 @@ class NeonOperationClient
      *
      * @see https://api-docs.neon.tech/reference/listprojectoperations
      *
-     * @param string $projectId The Neon project ID
-     * @param string|null $cursor Cursor value from the previous response
-     * @param int|null $limit Number of operations to return (1-1000)
+     * @param string      $projectId The Neon project ID
+     * @param string|null $cursor    Cursor value from the previous response
+     * @param int|null    $limit     Number of operations to return (1-1000)
      *
      * @return array<NeonOperation>
      *
@@ -39,10 +40,10 @@ class NeonOperationClient
     {
         $params = [
             'cursor' => $cursor,
-            'limit' => $limit,
+            'limit'  => $limit,
         ];
 
-        $response = $this->api->get("projects/{$projectId}/operations" . $this->api->buildQuery($params));
+        $response   = $this->api->get("projects/{$projectId}/operations" . $this->api->buildQuery($params));
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
@@ -60,7 +61,7 @@ class NeonOperationClient
      *
      * @see https://api-docs.neon.tech/reference/getprojectoperation
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId   The Neon project ID
      * @param string $operationId The operation ID (UUID)
      *
      * @throws NeonApiRequestException
@@ -69,7 +70,7 @@ class NeonOperationClient
     public function get(string $projectId, string $operationId): NeonOperation
     {
         $response = $this->api->get("projects/{$projectId}/operations/{$operationId}");
-        
+
         return NeonOperation::create($response['operation']);
     }
 }

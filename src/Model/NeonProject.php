@@ -41,8 +41,6 @@ readonly class NeonProject implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {

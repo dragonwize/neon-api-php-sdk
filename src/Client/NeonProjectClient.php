@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
@@ -12,8 +14,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonProjectClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Retrieves a list of projects for an organization.
@@ -33,8 +34,7 @@ class NeonProjectClient
         ?string $search = null,
         ?string $orgId = null,
         ?int $timeout = null
-    ): ?array
-    {
+    ): ?array {
         $params = [
             'cursor'  => $cursor,
             'limit'   => $limit,
@@ -63,10 +63,10 @@ class NeonProjectClient
      * @throws NeonApiResponseException
      */
     public function listShared(
-        int     $limit = 10,
+        int $limit = 10,
         ?string $cursor = null,
         ?string $search = null,
-        ?int    $timeout = null
+        ?int $timeout = null
     ): array {
         $params  = [
             'cursor'  => $cursor,
@@ -91,14 +91,12 @@ class NeonProjectClient
      *
      * @see https://api-docs.neon.tech/reference/getproject
      *
-     * @return NeonProject
-     *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
      */
     public function get(string $projectId): NeonProject
     {
-        $response = $this->api->get('projects/' . $projectId);
+        $response        = $this->api->get('projects/' . $projectId);
         $responseContent = $this->api->parseResponse($response);
 
         return NeonProject::create($responseContent['project']);
@@ -112,8 +110,6 @@ class NeonProjectClient
      * You can specify a region and Postgres version in the request body.
      *
      * @see https://api-docs.neon.tech/reference/createproject
-     *
-     * @return NeonProject
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException

@@ -16,8 +16,6 @@ readonly class ApiKeyCreatorData implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {
@@ -36,8 +34,8 @@ readonly class ApiKeyCreatorData implements NeonModelInterface
     public function jsonSerialize(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'id'    => $this->id,
+            'name'  => $this->name,
             'image' => $this->image,
         ];
     }

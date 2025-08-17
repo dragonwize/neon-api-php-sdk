@@ -20,8 +20,6 @@ readonly class NeonSnapshot implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {
@@ -44,13 +42,13 @@ readonly class NeonSnapshot implements NeonModelInterface
     public function jsonSerialize(): array
     {
         return array_filter([
-            'id' => $this->id,
-            'name' => $this->name,
-            'created_at' => $this->createdAt,
-            'lsn' => $this->lsn,
-            'timestamp' => $this->timestamp,
+            'id'               => $this->id,
+            'name'             => $this->name,
+            'created_at'       => $this->createdAt,
+            'lsn'              => $this->lsn,
+            'timestamp'        => $this->timestamp,
             'source_branch_id' => $this->sourceBranchId,
-            'expires_at' => $this->expiresAt,
+            'expires_at'       => $this->expiresAt,
         ], fn ($value) => $value !== null);
     }
 }

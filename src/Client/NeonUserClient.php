@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
@@ -13,8 +15,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonUserClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Retrieves information about the current Neon user account.
@@ -27,7 +28,7 @@ class NeonUserClient
     public function getCurrentUser(): NeonUser
     {
         $response = $this->api->get('users/me');
-        
+
         return NeonUser::create($response);
     }
 
@@ -42,7 +43,7 @@ class NeonUserClient
     public function getCurrentUserOrganizations(): array
     {
         $response = $this->api->get('users/me/organizations');
-        
+
         return $response['organizations'];
     }
 
@@ -52,7 +53,7 @@ class NeonUserClient
      * @see https://api-docs.neon.tech/reference/transferprojectsfromusertoorg
      *
      * @param string $destinationOrgId The destination organization identifier
-     * @param array $projectIds The list of project IDs to transfer (max 400)
+     * @param array  $projectIds       The list of project IDs to transfer (max 400)
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
@@ -61,11 +62,11 @@ class NeonUserClient
     {
         $data = [
             'destination_org_id' => $destinationOrgId,
-            'project_ids' => $projectIds,
+            'project_ids'        => $projectIds,
         ];
 
         $response = $this->api->post('users/me/projects/transfer', $data);
-        
+
         return $response;
     }
 
@@ -82,7 +83,7 @@ class NeonUserClient
     public function getAuthDetails(): NeonAuthDetails
     {
         $response = $this->api->get('auth');
-        
+
         return NeonAuthDetails::create($response);
     }
 }

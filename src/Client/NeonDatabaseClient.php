@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
@@ -13,8 +15,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonDatabaseClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Retrieves a list of databases for the specified branch.
@@ -32,7 +33,7 @@ class NeonDatabaseClient
      */
     public function list(string $projectId, string $branchId): array
     {
-        $response = $this->api->get("projects/{$projectId}/branches/{$branchId}/databases");
+        $response  = $this->api->get("projects/{$projectId}/branches/{$branchId}/databases");
         $databases = [];
         foreach ($response['databases'] as $database) {
             $databases[] = NeonDatabase::create($database);
@@ -55,7 +56,7 @@ class NeonDatabaseClient
     public function get(string $projectId, string $branchId, string $databaseName): NeonDatabase
     {
         $response = $this->api->get("projects/{$projectId}/branches/{$branchId}/databases/{$databaseName}");
-        
+
         return NeonDatabase::create($response['database']);
     }
 
@@ -78,15 +79,15 @@ class NeonDatabaseClient
     public function create(string $projectId, string $branchId, array $data): array
     {
         $response = $this->api->post("projects/{$projectId}/branches/{$branchId}/databases", ['database' => $data]);
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'database' => NeonDatabase::create($response['database']),
-            'operations' => $operations
+            'database'   => NeonDatabase::create($response['database']),
+            'operations' => $operations,
         ];
     }
 
@@ -108,15 +109,15 @@ class NeonDatabaseClient
     public function update(string $projectId, string $branchId, string $databaseName, array $data): array
     {
         $response = $this->api->sendRequest('PATCH', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseName}", ['json' => ['database' => $data]]);
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'database' => NeonDatabase::create($response['database']),
-            'operations' => $operations
+            'database'   => NeonDatabase::create($response['database']),
+            'operations' => $operations,
         ];
     }
 
@@ -136,15 +137,15 @@ class NeonDatabaseClient
     public function delete(string $projectId, string $branchId, string $databaseName): array
     {
         $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/databases/{$databaseName}");
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'database' => NeonDatabase::create($response['database']),
-            'operations' => $operations
+            'database'   => NeonDatabase::create($response['database']),
+            'operations' => $operations,
         ];
     }
 }

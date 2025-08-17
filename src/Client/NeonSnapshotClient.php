@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
@@ -15,8 +17,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonSnapshotClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Create a snapshot from the specified branch using the provided parameters.
@@ -26,8 +27,8 @@ class NeonSnapshotClient
      * @see https://api-docs.neon.tech/reference/createbranchsnapshot
      *
      * @param string $projectId The Neon project ID
-     * @param string $branchId The branch ID
-     * @param array $data Snapshot creation data
+     * @param string $branchId  The branch ID
+     * @param array  $data      Snapshot creation data
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
@@ -35,7 +36,7 @@ class NeonSnapshotClient
     public function create(string $projectId, string $branchId, array $data = []): array
     {
         $response = $this->api->post("projects/{$projectId}/branches/{$branchId}/snapshot", $data);
-        
+
         return $response;
     }
 
@@ -53,7 +54,7 @@ class NeonSnapshotClient
      */
     public function list(string $projectId): array
     {
-        $response = $this->api->get("projects/{$projectId}/snapshots");
+        $response  = $this->api->get("projects/{$projectId}/snapshots");
         $snapshots = [];
         foreach ($response['snapshots'] as $snapshot) {
             $snapshots[] = NeonSnapshot::create($snapshot);
@@ -67,9 +68,9 @@ class NeonSnapshotClient
      *
      * @see https://api-docs.neon.tech/reference/updatesnapshot
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $snapshotId The snapshot ID
-     * @param array $data Snapshot update data
+     * @param array  $data       Snapshot update data
      *
      * @throws NeonApiRequestException
      * @throws NeonApiResponseException
@@ -77,7 +78,7 @@ class NeonSnapshotClient
     public function update(string $projectId, string $snapshotId, array $data): NeonSnapshot
     {
         $response = $this->api->sendRequest('PATCH', "projects/{$projectId}/snapshots/{$snapshotId}", ['json' => ['snapshot' => $data]]);
-        
+
         return NeonSnapshot::create($response['snapshot']);
     }
 
@@ -86,7 +87,7 @@ class NeonSnapshotClient
      *
      * @see https://api-docs.neon.tech/reference/deletesnapshot
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $snapshotId The snapshot ID
      *
      * @throws NeonApiRequestException
@@ -95,7 +96,7 @@ class NeonSnapshotClient
     public function delete(string $projectId, string $snapshotId): NeonSnapshot
     {
         $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/snapshots/{$snapshotId}");
-        
+
         return NeonSnapshot::create($response['snapshot']);
     }
 
@@ -104,9 +105,9 @@ class NeonSnapshotClient
      *
      * @see https://api-docs.neon.tech/reference/restoresnapshot
      *
-     * @param string $projectId The Neon project ID
+     * @param string $projectId  The Neon project ID
      * @param string $snapshotId The snapshot ID
-     * @param array $data Restore configuration data
+     * @param array  $data       Restore configuration data
      *
      * @return array{branch: NeonBranch, endpoints: array<NeonEndpoint>, operations: array<NeonOperation>}
      *
@@ -116,21 +117,21 @@ class NeonSnapshotClient
     public function restore(string $projectId, string $snapshotId, array $data): array
     {
         $response = $this->api->post("projects/{$projectId}/snapshots/{$snapshotId}/restore", $data);
-        
+
         $endpoints = [];
         foreach ($response['endpoints'] as $endpoint) {
             $endpoints[] = NeonEndpoint::create($endpoint);
         }
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'branch' => NeonBranch::create($response['branch']),
-            'endpoints' => $endpoints,
-            'operations' => $operations
+            'branch'     => NeonBranch::create($response['branch']),
+            'endpoints'  => $endpoints,
+            'operations' => $operations,
         ];
     }
 }

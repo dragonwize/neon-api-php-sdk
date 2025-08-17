@@ -1,11 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dragonwize\NeonApiSdk\Client;
 
 use Dragonwize\NeonApiSdk\Exception\NeonApiRequestException;
 use Dragonwize\NeonApiSdk\Exception\NeonApiResponseException;
-use Dragonwize\NeonApiSdk\Model\NeonRole;
 use Dragonwize\NeonApiSdk\Model\NeonOperation;
+use Dragonwize\NeonApiSdk\Model\NeonRole;
 use Dragonwize\NeonApiSdk\NeonApiInterface;
 
 /**
@@ -13,8 +15,7 @@ use Dragonwize\NeonApiSdk\NeonApiInterface;
  */
 class NeonRoleClient
 {
-    public function __construct(protected NeonApiInterface $api)
-    {}
+    public function __construct(protected NeonApiInterface $api) {}
 
     /**
      * Retrieves a list of Postgres roles from the specified branch.
@@ -33,7 +34,7 @@ class NeonRoleClient
     public function list(string $projectId, string $branchId): array
     {
         $response = $this->api->get("projects/{$projectId}/branches/{$branchId}/roles");
-        $roles = [];
+        $roles    = [];
         foreach ($response['roles'] as $role) {
             $roles[] = NeonRole::create($role);
         }
@@ -57,7 +58,7 @@ class NeonRoleClient
     public function get(string $projectId, string $branchId, string $roleName): NeonRole
     {
         $response = $this->api->get("projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
-        
+
         return NeonRole::create($response['role']);
     }
 
@@ -67,7 +68,7 @@ class NeonRoleClient
      * You can obtain a project_id by listing the projects for your Neon account.
      * You can obtain the branch_id by listing the project's branches.
      * In Neon, the terms "role" and "user" are synonymous.
-     * 
+     *
      * Connections established to the active compute endpoint will be dropped.
      * If the compute endpoint is idle, the endpoint becomes active for a short period of time and is suspended afterward.
      *
@@ -83,15 +84,15 @@ class NeonRoleClient
     public function create(string $projectId, string $branchId, array $data): array
     {
         $response = $this->api->post("projects/{$projectId}/branches/{$branchId}/roles", ['role' => $data]);
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'role' => NeonRole::create($response['role']),
-            'operations' => $operations
+            'role'       => NeonRole::create($response['role']),
+            'operations' => $operations,
         ];
     }
 
@@ -113,15 +114,15 @@ class NeonRoleClient
     public function delete(string $projectId, string $branchId, string $roleName): array
     {
         $response = $this->api->sendRequest('DELETE', "projects/{$projectId}/branches/{$branchId}/roles/{$roleName}");
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'role' => NeonRole::create($response['role']),
-            'operations' => $operations
+            'role'       => NeonRole::create($response['role']),
+            'operations' => $operations,
         ];
     }
 
@@ -141,7 +142,7 @@ class NeonRoleClient
     public function revealPassword(string $projectId, string $branchId, string $roleName): NeonRole
     {
         $response = $this->api->get("projects/{$projectId}/branches/{$branchId}/roles/{$roleName}/reveal_password");
-        
+
         return NeonRole::create($response['role']);
     }
 
@@ -167,15 +168,15 @@ class NeonRoleClient
     public function resetPassword(string $projectId, string $branchId, string $roleName): array
     {
         $response = $this->api->post("projects/{$projectId}/branches/{$branchId}/roles/{$roleName}/reset_password");
-        
+
         $operations = [];
         foreach ($response['operations'] as $operation) {
             $operations[] = NeonOperation::create($operation);
         }
-        
+
         return [
-            'role' => NeonRole::create($response['role']),
-            'operations' => $operations
+            'role'       => NeonRole::create($response['role']),
+            'operations' => $operations,
         ];
     }
 }

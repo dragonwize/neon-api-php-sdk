@@ -18,8 +18,6 @@ readonly class NeonRegion implements NeonModelInterface
      * Create a hydrated instance with API response data.
      *
      * @param array<string, string|int|bool|object|array|null> $data
-     *
-     * @return static
      */
     public static function create(array $data): static
     {
@@ -41,10 +39,10 @@ readonly class NeonRegion implements NeonModelInterface
     {
         return [
             'region_id' => $this->regionId,
-            'name' => $this->name,
-            'default' => $this->default,
-            'geo_lat' => $this->geoLat,
-            'geo_long' => $this->geoLong,
+            'name'      => $this->name,
+            'default'   => $this->default,
+            'geo_lat'   => $this->geoLat,
+            'geo_long'  => $this->geoLong,
         ];
     }
 }

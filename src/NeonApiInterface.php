@@ -1,7 +1,8 @@
 <?php
 
-namespace Dragonwize\NeonApiSdk;
+declare(strict_types=1);
 
+namespace Dragonwize\NeonApiSdk;
 
 use Dragonwize\NeonApiSdk\Exception\NeonApiException;
 use Psr\Http\Client\ClientInterface;
@@ -45,8 +46,6 @@ interface NeonApiInterface
      * Create a HTTP query string from an array of parameters.
      *
      * @param array<string, string|int|bool> $params
-     *
-     * @return string
      */
     public function buildQuery(array $params): string;
 }
